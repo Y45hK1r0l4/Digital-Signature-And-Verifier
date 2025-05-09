@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify File Signature</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 40px;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-top: 50px;
+        }
+        h2 {
+            color: #333;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-verify {
+            background: #28a745;
+            color: white;
+        }
+        .btn-verify:hover {
+            background: #1e7e34;
+        }
+        .btn-sign {
+            background: #007bff;
+            color: white;
+        }
+        .btn-sign:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Verify File Signature</h2>
+
+        <form method="post" enctype="multipart/form-data"  action="{% url 'verify' %}">
+            {% csrf_token %}
+            <label>Upload File:</label>
+            <input type="file" name="file" required>
+            <br>
+            <label>Upload Signature:</label>
+            <input type="file" name="signature" required>
+            <br>
+            <button class="btn btn-verify" type="submit">Verify File</button>
+        </form>
+
+        <!-- Separate "Sign" button below -->
+        <div class="btn-container">
+            <a href="{% url 'sign' %}" class="btn btn-sign">Go to Sign</a>
+        </div>
+    </div>
+</body>
+</html>

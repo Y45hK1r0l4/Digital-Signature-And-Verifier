@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Signature for PDF & Text Files</title>
+</head>
+<body>
+    <h2>Sign a File</h2>
+    <form id="signForm" enctype="multipart/form-data">
+        <input type="file" id="signFile" required>
+        <button type="submit">Sign File</button>
+    </form>
+    <p id="signResult"></p>
+
+    <h2>Verify a Signed File</h2>
+    <form id="verifyForm" enctype="multipart/form-data">
+        <input type="file" id="verifyFile" required>
+        <input type="text" id="verifySignature" placeholder="Enter signature" required>
+        <button type="submit">Verify File</button>
+    </form>
+    <p id="verifyResult"></p>
+
+    <script>
+        document.getElementById("signForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const formData = new FormData();
+            const file = document.getElementById("signFile").files[0];
+            formData.append("file", file);
+
+            const response = await fetch("/sign/", {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+            document.getElementById("signResult").innerText = result.signature || result.error;
+        });
+
+        document.getElementById("verifyForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const formData = new FormData();
+            const file = document.getElementById("verifyFile").files[0];
+            const signature = document.getElementById("verifySignature").value;
+
+            formData.append("file", file);
+            formData.append("signature", signature);
+
+            const response = await fetch("/sign/verify/", {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+            document.getElementById("verifyResult").innerText = result.message || result.error;
+        });
+    </script>
+</body>
+</html>
