@@ -1,0 +1,656 @@
+{% extends "base.html" %}
+
+{% block title %}Secure Document Verification{% endblock %}
+
+{% block extra_css %}
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary: #3f37c9;
+      --accent: #4895ef;
+      --success: #4cc9f0;
+      --danger: #f72585;
+      --warning: #f8961e;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray-200: #e9ecef;
+      --gray-300: #dee2e6;
+      --gray-500: #adb5bd;
+      --gray-600: #6c757d;
+      --gray-700: #495057;
+      --gradient: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      --shadow: 0 10px 30px rgba(67, 97, 238, 0.15);
+      --card-shadow: 0 15px 35px rgba(0, 0, 0, 0.07);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--dark);
+      background: #f7f7ff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      letter-spacing: -0.5px;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 16px;
+      max-width: 800px;
+      width: 100%;
+      padding: 40px;
+      margin: 0 auto;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: var(--gradient);
+    }
+    
+    .step-container {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      position: relative;
+    }
+    
+    .step-container::after {
+      content: "";
+      position: absolute;
+      top: 25px;
+      left: 50px;
+      right: 50px;
+      height: 2px;
+      background: #e9ecef;
+      z-index: 1;
+    }
+    
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .step-circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid #e9ecef;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      color: #adb5bd;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+    }
+    
+    .step-text {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #6c757d;
+    }
+    
+    .step.active .step-circle {
+      background: var(--gradient);
+      border-color: var(--primary);
+      color: white;
+      box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+    }
+    
+    .step.active .step-text {
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    .input-section {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid #e9ecef;
+      transition: all 0.3s ease;
+    }
+    
+    .input-section:hover {
+      box-shadow: var(--shadow);
+      border-color: #dee2e6;
+    }
+    
+    .input-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .input-icon {
+      background: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      color: var(--primary);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      font-size: 1rem;
+    }
+    
+    label {
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--dark);
+      margin-bottom: 0;
+    }
+    
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      font-family: 'Consolas', monospace;
+      font-size: 14px;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+      resize: vertical;
+      transition: all 0.2s ease;
+      background: white;
+    }
+    
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+    }
+    
+    .file-upload {
+      margin-top: 16px;
+      position: relative;
+    }
+    
+    .upload-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      border: 1px dashed #ced4da;
+      border-radius: 8px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .upload-label:hover {
+      border-color: var(--primary);
+      background: rgba(67, 97, 238, 0.03);
+    }
+    
+    .upload-icon {
+      margin-right: 10px;
+      color: var(--primary);
+    }
+    
+    .upload-text {
+      font-size: 0.95rem;
+      color: #6c757d;
+    }
+    
+    input[type="file"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+    
+    .or-divider {
+      display: flex;
+      align-items: center;
+      margin: 16px 0;
+      color: #adb5bd;
+      font-size: 0.9rem;
+    }
+    
+    .or-divider::before,
+    .or-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #dee2e6;
+      margin: 0 10px;
+    }
+    
+    .file-name {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: var(--dark);
+      background: rgba(67, 97, 238, 0.05);
+      padding: 6px 12px;
+      border-radius: 4px;
+      display: none;
+    }
+    
+    .file-name i {
+      margin-right: 5px;
+      color: var(--primary);
+    }
+    
+    button {
+      background: var(--gradient);
+      color: white;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(67, 97, 238, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(67, 97, 238, 0.3);
+    }
+    
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 8px rgba(67, 97, 238, 0.2);
+    }
+    
+    button:disabled {
+      background: #e9ecef;
+      color: #adb5bd;
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    button i {
+      margin-right: 8px;
+    }
+    
+    .result {
+      margin-top: 24px;
+      padding: 20px;
+      border-radius: 10px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      animation: fadeIn 0.5s ease;
+      display: none;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .success {
+      background-color: rgba(76, 201, 240, 0.15);
+      color: #0077b6;
+      border-left: 4px solid var(--success);
+    }
+    
+    .failure {
+      background-color: rgba(247, 37, 133, 0.15);
+      color: #d00000;
+      border-left: 4px solid var(--danger);
+    }
+    
+    .result i {
+      font-size: 1.5rem;
+      margin-right: 12px;
+    }
+    
+    .error {
+      color: var(--danger);
+      margin-top: 12px;
+      font-size: 0.9rem;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Hash Algorithm Select Styling */
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+      background-color: white;
+      font-size: 1rem;
+      color: var(--dark);
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236c757d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+    }
+    
+    .select-wrapper {
+      margin-top: 16px;
+      position: relative;
+    }
+    
+    .select-label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--gray-700);
+      margin-bottom: 8px;
+      display: block;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .container {
+        padding: 30px 20px;
+      }
+      
+      .step-container::after {
+        left: 25px;
+        right: 25px;
+      }
+      
+      .step-circle {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+      
+      .input-section {
+        padding: 20px 15px;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<h1>Secure Document Verification</h1>
+
+<div class="container">
+  <form method="post" enctype="multipart/form-data" id="verify-form">
+    {% csrf_token %}
+    <div class="step-container">
+      <div class="step active" id="step1">
+        <div class="step-circle">
+          <i class="fas fa-key"></i>
+        </div>
+        <div class="step-text">Public Key</div>
+      </div>
+      <div class="step" id="step2">
+        <div class="step-circle">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <div class="step-text">Document</div>
+      </div>
+      <div class="step" id="step3">
+        <div class="step-circle">
+          <i class="fas fa-signature"></i>
+        </div>
+        <div class="step-text">Signature</div>
+      </div>
+    </div>
+
+    <!-- Section 1: Public Key -->
+    <div class="input-section" id="section1">
+      <div class="input-header">
+        <div class="input-icon">
+          <i class="fas fa-key"></i>
+        </div>
+        <label>Public Key</label>
+      </div>
+      <textarea id="public_key_text" name="public_key_text" placeholder="-----BEGIN PUBLIC KEY-----
+
+        ...
+
+-----END PUBLIC KEY-----"></textarea>
+
+      <div class="or-divider">OR</div>
+
+      <div class="file-upload">
+        <div class="upload-label">
+          <i class="fas fa-upload upload-icon"></i>
+          <span class="upload-text">Upload Public Key (.pem)</span>
+        </div>
+        <input type="file" id="public_key_file" name="public_key_file" accept=".pem" />
+        <div class="file-name" id="publicKeyFileName">
+          <i class="fas fa-file-code"></i>
+          <span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Document -->
+    <div class="input-section" id="section2">
+      <div class="input-header">
+        <div class="input-icon">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <label>Document to Verify</label>
+      </div>
+      <div class="file-upload">
+        <div class="upload-label">
+          <i class="fas fa-upload upload-icon"></i>
+          <span class="upload-text">Select document file</span>
+        </div>
+        <input type="file" id="document_file" name="document_file" required />
+        <div class="file-name" id="documentFileName">
+          <i class="fas fa-file"></i>
+          <span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Signature -->
+    <div class="input-section" id="section3">
+      <div class="input-header">
+        <div class="input-icon">
+          <i class="fas fa-signature"></i>
+        </div>
+        <label>Signature File</label>
+      </div>
+      <div class="file-upload">
+        <div class="upload-label">
+          <i class="fas fa-upload upload-icon"></i>
+          <span class="upload-text">Select signature file (.sig)</span>
+        </div>
+        <input type="file" id="signature_file" name="signature_file" accept=".sig" required />
+        <div class="file-name" id="signatureFileName">
+          <i class="fas fa-file-signature"></i>
+          <span></span>
+        </div>
+      </div>
+      
+      <!-- Hash Algorithm Selection -->
+      <div class="select-wrapper">
+        <label class="select-label" for="hashAlgo">Hash Algorithm</label>
+        <select id="hashAlgo" name="hash_algo">
+          <option value="SHA256">SHA-256</option>
+          <option value="SHA384">SHA-384</option>
+          <option value="SHA512">SHA-512</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button id="verifyBtn" type="submit">
+      <i class="fas fa-shield-alt"></i>
+      Verify Document
+    </button>
+
+    <!-- Result Containers -->
+    <div id="result" class="result"></div>
+    <div id="error" class="error"></div>
+  </form>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    let publicKeyText = '';
+    let publicKeyFromFile = null;
+    let documentFile = null;
+    let signatureFile = null;
+
+    // Function to update all file display names and button state
+    const updateUI = () => {
+      // Handle file name displays
+      const publicKeyFileElem = document.getElementById('publicKeyFileName');
+      const documentFileElem = document.getElementById('documentFileName');
+      const signatureFileElem = document.getElementById('signatureFileName');
+      
+      // Update steps visual state
+      document.getElementById('step1').className = 'step active';
+      document.getElementById('step2').className = 'step' + (documentFile ? ' active' : '');
+      document.getElementById('step3').className = 'step' + (signatureFile ? ' active' : '');
+      
+      // Show filenames if files are selected
+      if (publicKeyFromFile) {
+        publicKeyFileElem.style.display = 'block';
+        publicKeyFileElem.querySelector('span').textContent = document.getElementById('public_key_file').files[0].name;
+      } else {
+        publicKeyFileElem.style.display = 'none';
+      }
+      
+      if (documentFile) {
+        documentFileElem.style.display = 'block';
+        documentFileElem.querySelector('span').textContent = document.getElementById('document_file').files[0].name;
+      } else {
+        documentFileElem.style.display = 'none';
+      }
+      
+      if (signatureFile) {
+        signatureFileElem.style.display = 'block';
+        signatureFileElem.querySelector('span').textContent = document.getElementById('signature_file').files[0].name;
+      } else {
+        signatureFileElem.style.display = 'none';
+      }
+      
+      // Enable verify if document & signature uploaded and either textarea has text or pem file loaded
+      const pubKeyProvided = publicKeyText.trim().length > 0 || publicKeyFromFile !== null;
+      document.getElementById('verifyBtn').disabled = !(pubKeyProvided && documentFile && signatureFile);
+    };
+
+    // If user pastes into textarea, clear uploaded file and update key text
+    document.getElementById('public_key_text').addEventListener('input', (e) => {
+      publicKeyText = e.target.value;
+      if(publicKeyText.trim().length > 0) {
+        publicKeyFromFile = null;
+        document.getElementById('public_key_file').value = '';
+      }
+      updateUI();
+    });
+
+    // If user uploads a PEM file, read and display in textarea
+    document.getElementById('public_key_file').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) {
+        publicKeyFromFile = null;
+        updateUI();
+        return;
+      }
+      
+      // Store the file object for later submission
+      publicKeyFromFile = file;
+      
+      // Read the file content and display in textarea
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const fileContent = event.target.result;
+        document.getElementById('public_key_text').value = fileContent;
+        publicKeyText = fileContent;
+      };
+      reader.readAsText(file);
+      
+      updateUI();
+    });
+
+    document.getElementById('document_file').addEventListener('change', (e) => {
+      documentFile = e.target.files[0] || null;
+      updateUI();
+    });
+
+    document.getElementById('signature_file').addEventListener('change', (e) => {
+      signatureFile = e.target.files[0] || null;
+      updateUI();
+    });
+
+    // Set up the form submit
+    document.getElementById('verify-form').addEventListener('submit', function(e) {
+      const resultDiv = document.getElementById('result');
+      const errorDiv = document.getElementById('error');
+      const verifyBtn = document.getElementById('verifyBtn');
+      
+      // Show loading state
+      verifyBtn.innerHTML = '<div class="loading"></div>Verifying...';
+      
+      // Form will submit normally to the backend
+      // The backend response will redirect to the result page
+    });
+    
+    // Initialize UI
+    updateUI();
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,701 @@
+
+{% extends "base.html" %}
+
+{% block title %}Document Signing Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --primary: #4361ee;
+    --primary-dark: #3a56d4;
+    --secondary: #3f37c9;
+    --accent: #4895ef;
+    --success: #4cc9f0;
+    --danger: #f72585;
+    --warning: #f8961e;
+    --light: #f8f9fa;
+    --dark: #212529;
+    --gray-200: #e9ecef;
+    --gray-300: #dee2e6;
+    --gray-500: #adb5bd;
+    --gray-600: #6c757d;
+    --gray-700: #495057;
+    --gradient: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    --shadow: 0 10px 30px rgba(67, 97, 238, 0.15);
+    --card-shadow: 0 15px 35px rgba(0, 0, 0, 0.07);
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+    color: var(--dark);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    letter-spacing: -0.5px;
+  }
+  
+  .container {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    max-width: 800px;
+    margin: 0 auto 2rem auto;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+    transform: translateY(0);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(to right, var(--primary), var(--accent));
+  }
+  
+  .input-section {
+    margin-bottom: 1.8rem;
+    position: relative;
+  }
+  
+  label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.8rem;
+    color: var(--gray-700);
+    font-size: 1rem;
+  }
+  
+  textarea {
+    width: 100%;
+    min-height: 120px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    padding: 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--gray-300);
+    resize: vertical;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: #fafafa;
+  }
+  
+  textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+    background-color: white;
+  }
+  
+  .file-input-container {
+    position: relative;
+    margin: 0.7rem 0 1.5rem 0;
+  }
+
+  .file-input-container label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem 1.2rem;
+    background-color: #f8f9fa;
+    color: var(--gray-700);
+    border: 1px dashed var(--gray-500);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+  }
+
+  .file-input-container label:hover {
+    background-color: #e9ecef;
+    border-color: var(--primary);
+  }
+
+  .file-input-container .file-name {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--gray-600);
+    text-align: center;
+    word-break: break-all;
+  }
+
+  input[type="file"] {
+    position: absolute;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    z-index: -1;
+  }
+  
+  select {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--gray-300);
+    background-color: #fafafa;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236c757d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+  }
+  
+  select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+    background-color: white;
+  }
+  
+  button {
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    color: white;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-top: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+  }
+  
+  button:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  
+  button:disabled {
+    background: linear-gradient(to right, #b0b0b0, #8d8d8d);
+    transform: none;
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.7s;
+  }
+
+  button:hover:not(:disabled)::before {
+    left: 100%;
+  }
+  
+  .result {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    border-radius: 10px;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .success {
+    background-color: rgba(76, 201, 240, 0.15);
+    color: var(--secondary);
+    border-left: 4px solid var(--success);
+  }
+  
+  .failure {
+    background-color: rgba(239, 71, 111, 0.15);
+    color: var(--danger);
+    border-left: 4px solid var(--danger);
+  }
+  
+  .error {
+    color: var(--danger);
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .step-indicator {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+    position: relative;
+  }
+  
+  .step-indicator::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    right: 20px;
+    height: 3px;
+    background-color: var(--gray-300);
+    z-index: 1;
+  }
+  
+  .step {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: white;
+    border: 2px solid var(--gray-300);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+  }
+  
+  .step.active {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    box-shadow: 0 0 15px rgba(67, 97, 238, 0.4);
+  }
+
+  .step.completed {
+    background-color: var(--success);
+    border-color: var(--success);
+    color: white;
+  }
+
+  .step-label {
+    position: absolute;
+    top: 38px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--gray-600);
+    transition: all 0.3s ease;
+  }
+
+  .step.active .step-label {
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .step.completed .step-label {
+    color: var(--success);
+    font-weight: 600;
+  }
+
+  .field-status {
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    color: var(--gray-600);
+    transition: all 0.3s ease;
+  }
+
+  .field-status.valid {
+    color: var(--success);
+  }
+
+  .field-status svg {
+    margin-right: 0.3rem;
+  }
+
+  .hash-info-tooltip {
+    position: relative;
+    display: inline-block;
+    margin-left: 0.5rem;
+    cursor: help;
+  }
+
+  .hash-info-tooltip .tooltip-text {
+    visibility: hidden;
+    width: 250px;
+    background-color: var(--dark);
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.8rem;
+    font-weight: normal;
+  }
+
+  .hash-info-tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+    color: var(--primary);
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 2px solid var(--gray-200);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+  }
+
+  .section-title svg {
+    margin-right: 0.5rem;
+  }
+
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(67, 97, 238, 0.2);
+    border-radius: 50%;
+    border-top-color: var(--primary);
+    animation: spin 1s ease-in-out infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding: 1.5rem;
+    }
+    
+    h1 {
+      font-size: 2rem;
+    }
+    
+    .step-label {
+      font-size: 0.7rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Document Signing Portal</h1>
+
+<div class="container">
+  <div class="step-indicator">
+    <div class="step active" id="step1">
+      1
+      <span class="step-label">Private Key</span>
+    </div>
+    <div class="step" id="step2">
+      2
+      <span class="step-label">Options</span>
+    </div>
+    <div class="step" id="step3">
+      3
+      <span class="step-label">Document</span>
+    </div>
+    <div class="step" id="step4">
+      4
+      <span class="step-label">Sign</span>
+    </div>
+  </div>
+
+  <form method="post" enctype="multipart/form-data" id="signForm">
+    {% csrf_token %}
+    
+    <div class="section-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+      </svg>
+      Private Key Input
+    </div>
+    
+    <div class="input-section">
+      <label for="privateKeyInput">Paste Private Key</label>
+      <textarea id="privateKeyInput" name="private_key" rows="6" placeholder='-----BEGIN RSA PRIVATE KEY----- 
+
+          ... 
+
+-----END RSA PRIVATE KEY-----' spellcheck="false"></textarea>
+      <div class="field-status" id="privateKeyStatus">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        Waiting for private key...
+      </div>
+    </div>
+
+    <div class="file-input-container">
+      <label for="privateKeyFile">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="12" y1="18" x2="12" y2="12"></line>
+          <line x1="9" y1="15" x2="15" y2="15"></line>
+        </svg>
+        &nbsp;OR upload Private Key
+      </label>
+      <input type="file" id="privateKeyFile" name="private_key_file" accept=".pem,.key" />
+      <div class="file-name" id="privateKeyFileName"></div>
+    </div>
+
+    <div class="section-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+      </svg>
+      Signing Options
+    </div>
+    
+    <div class="input-section">
+      <label for="hashAlgo">
+        Hash Algorithm
+        <span class="hash-info-tooltip">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <span class="tooltip-text">Higher bit strength provides stronger security but may take longer to process</span>
+        </span>
+      </label>
+      <select id="hashAlgo" name="hash_algo">
+        <option value="SHA256">SHA-256</option>
+        <option value="SHA384">SHA-384</option>
+        <option value="SHA512">SHA-512</option>
+      </select>
+    </div>
+
+    <div class="section-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+        <polyline points="10 9 9 9 8 9"></polyline>
+      </svg>
+      Document Selection
+    </div>
+    
+    <div class="file-input-container">
+      <label for="fileInput">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        &nbsp;Select Document to Sign
+      </label>
+      <input type="file" id="fileInput" name="file_to_sign" />
+      <div class="file-name" id="documentFileName"></div>
+    </div>
+
+    <button id="signBtn" type="submit" disabled>Sign Document</button>
+  </form>
+  
+  <!-- Signature output container will be appended here -->
+  <div id="signatureOutput" style="margin-top: 1.5rem;"></div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const fileInput = document.getElementById('fileInput');
+  const privateKeyInput = document.getElementById('privateKeyInput');
+  const privateKeyFileInput = document.getElementById('privateKeyFile');
+  const signBtn = document.getElementById('signBtn');
+  const hashAlgo = document.getElementById('hashAlgo');
+  const signatureOutput = document.getElementById('signatureOutput');
+  const steps = document.querySelectorAll('.step');
+  const privateKeyStatus = document.getElementById('privateKeyStatus');
+  const privateKeyFileName = document.getElementById('privateKeyFileName');
+  const documentFileName = document.getElementById('documentFileName');
+  const signForm = document.getElementById('signForm');
+
+  // Validation states
+  let isPrivateKeyValid = false;
+  let isFileSelected = false;
+
+  // Function to check if all required fields are valid
+  function validateFormAndEnableButton() {
+    if (isPrivateKeyValid && isFileSelected) {
+      signBtn.disabled = false;
+    } else {
+      signBtn.disabled = true;
+    }
+  }
+
+  // Update steps based on user actions
+  privateKeyInput.addEventListener('input', () => {
+    const keyValue = privateKeyInput.value.trim();
+    if (keyValue) {
+      if (keyValue.startsWith("-----BEGIN") && keyValue.includes("PRIVATE KEY") && keyValue.includes("-----END")) {
+        isPrivateKeyValid = true;
+        privateKeyStatus.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4cc9f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          Valid private key format detected
+        `;
+        privateKeyStatus.classList.add('valid');
+        updateSteps(2);
+      } else {
+        isPrivateKeyValid = false;
+        privateKeyStatus.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f72585" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+          Invalid key format. Should begin with "-----BEGIN" and end with "-----END"
+        `;
+        privateKeyStatus.classList.remove('valid');
+      }
+    } else {
+      isPrivateKeyValid = false;
+      privateKeyStatus.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        Waiting for private key...
+      `;
+      privateKeyStatus.classList.remove('valid');
+    }
+    validateFormAndEnableButton();
+  });
+
+  hashAlgo.addEventListener('change', () => {
+    if (isPrivateKeyValid) {
+      updateSteps(3);
+    }
+  });
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) {
+      isFileSelected = true;
+      documentFileName.textContent = fileInput.files[0].name;
+      if (isPrivateKeyValid) {
+        updateSteps(4);
+      }
+      validateFormAndEnableButton();
+    } else {
+      isFileSelected = false;
+      documentFileName.textContent = '';
+      validateFormAndEnableButton();
+    }
+  });
+
+  function updateSteps(activeStep) {
+    steps.forEach((step, index) => {
+      // Zero-based index, but steps are 1-based
+      const stepNum = index + 1;
+      
+      if (stepNum < activeStep) {
+        step.classList.add('completed');
+        step.classList.remove('active');
+      } else if (stepNum === activeStep) {
+        step.classList.add('active');
+        step.classList.remove('completed');
+      } else {
+        step.classList.remove('active');
+        step.classList.remove('completed');
+      }
+    });
+  }
+
+  // When a private key file is uploaded, read it and fill the textarea
+  privateKeyFileInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    privateKeyFileName.textContent = file.name;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      privateKeyInput.value = e.target.result.trim();
+      // Trigger the input event to validate the key
+      const inputEvent = new Event('input');
+      privateKeyInput.dispatchEvent(inputEvent);
+    };
+    reader.readAsText(file);
+  });
+
+  // Submit form handling
+  signForm.addEventListener('submit', (event) => {
+    
+    // Update all steps to completed state
+    steps.forEach(step => {
+      step.classList.add('completed');
+      step.classList.remove('active');
+    });
+    
+    // The form will naturally submit - no need to prevent default
+  });
+
+  // Add animation effects
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initial check for any pre-filled values
+    if (privateKeyInput.value.trim()) {
+      const inputEvent = new Event('input');
+      privateKeyInput.dispatchEvent(inputEvent);
+    }
+    
+    if (fileInput.files.length > 0) {
+      const changeEvent = new Event('change');
+      fileInput.dispatchEvent(changeEvent);
+    }
+    
+    // Visual feedback when focusing on input elements
+    const interactiveElements = document.querySelectorAll('textarea, select, input, button');
+    interactiveElements.forEach(element => {
+      element.addEventListener('focus', function() {
+        this.style.transition = 'all 0.2s ease';
+        this.style.transform = 'scale(1.01)';
+      });
+      
+      element.addEventListener('blur', function() {
+        this.style.transform = 'scale(1)';
+      });
+    });
+  });
+</script>
+{% endblock %}

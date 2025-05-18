@@ -1,8 +1,12 @@
 from django.urls import path
-from .views import sign_file_view, verify_file_view, home
+from . import views
 
 urlpatterns = [
-    path("", home),
-    path("sign/", sign_file_view, name="sign"),
-    path("sign/verify/", verify_file_view, name="verify"),  
+    path("", views.home),
+    path('home/', views.redirect_home, name='redirect_home'),
+    path("sign/", views.sign_file_view, name="sign"),
+    path("sign/verify/", views.verify_file_view, name="verify"), 
+    path('custom_verify/', views.custom_file_verify, name='custom_verify'),
+    path('custom_sign/', views.custom_file_sign, name='custom_sign'),
+    path('generate_keys/', views.generate_keys, name='generate_keys'),
 ]

@@ -7,4 +7,5 @@ from django.urls import path, include  # Add 'include' here
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include('signer.urls')),  # Use include() to refer to signer app's URLs
+     
 ]
