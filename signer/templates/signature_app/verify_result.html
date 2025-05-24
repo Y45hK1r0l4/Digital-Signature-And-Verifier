@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Verification Result</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --success: #2ec4b6;
+            --error: #e63946;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 700px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .header {
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+            right: 10%;
+            height: 1px;
+            background: #eaeaea;
+        }
+        
+        h2 {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        .status-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        
+        .success-message {
+            color: var(--success);
+            font-size: 20px;
+            font-weight: 500;
+        }
+        
+        .error-message {
+            color: var(--error);
+            font-size: 20px;
+            font-weight: 500;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .details-card {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .detail-row {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: flex-start;
+        }
+        
+        .detail-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            width: 140px;
+            flex-shrink: 0;
+            color: var(--gray);
+        }
+        
+        .detail-value {
+            flex: 1;
+            word-break: break-all;
+        }
+        
+        .signed-message {
+            font-family: monospace;
+            background: #f8f9fa;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-top: 5px;
+            overflow-x: auto;
+        }
+        
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .button {
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 180px;
+        }
+        
+        .button i {
+            margin-right: 8px;
+        }
+        
+        .primary-button {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .primary-button:hover {
+            background: #3051d3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+        }
+        
+        .secondary-button {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .secondary-button:hover {
+            background: #f0f4ff;
+            transform: translateY(-2px);
+        }
+        
+        .hash-text {
+            font-family: monospace;
+            font-size: 14px;
+            word-break: break-all;
+        }
+        
+        .hash-match {
+            font-weight: 600;
+            color: var(--success);
+            display: inline-flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+        
+        .hash-mismatch {
+            font-weight: 600;
+            color: var(--error);
+            display: inline-flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+        
+        .hash-status-icon {
+            margin-right: 5px;
+        }
+        
+        /* Animation for successful verification */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 1s ease-in-out;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .button-container {
+                flex-direction: column;
+            }
+            
+            .button {
+                width: 100%;
+            }
+            
+            .detail-row {
+                flex-direction: column;
+            }
+            
+            .detail-label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>File Verification Result</h2>
+            
+            {% if status == "success" %}
+                <div class="status-icon pulse">
+                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                </div>
+                <p class="success-message">{{ message }}</p>
+            {% else %}
+                <div class="status-icon">
+                    <i class="fas fa-exclamation-triangle" style="color: var(--error);"></i>
+                </div>
+                <p class="error-message">{{ message }}</p>
+            {% endif %}
+        </div>
+        
+        <div class="content">
+            <div class="details-card">
+                <div class="detail-row">
+                    <div class="detail-label">File Name</div>
+                    <div class="detail-value">{{ file_name }}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Computed Hash</div>
+                    <div class="detail-value">
+                        <div class="hash-text">{{ file_hash }}</div>
+                        
+                        {% if status == "success" %}
+                            <div class="hash-match">
+                                <i class="fas fa-check hash-status-icon"></i> Hash matches
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Signature Hash</div>
+                    <div class="detail-value">
+                        <div class="hash-text">{{ signature_hash }}</div>
+                        
+                        {% if status != "success" %}
+                            <div class="hash-mismatch">
+                                <i class="fas fa-times hash-status-icon"></i> Hash mismatch
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Signed Message</div>
+                    <div class="detail-value">
+                        <div class="signed-message">{{ signed_message }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <a href="{% url 'verify' %}" class="button primary-button">
+                    <i class="fas fa-check-circle"></i> Verify Another File
+                </a>
+                <a href="{% url 'sign' %}" class="button secondary-button">
+                    <i class="fas fa-signature"></i> Sign a Document
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

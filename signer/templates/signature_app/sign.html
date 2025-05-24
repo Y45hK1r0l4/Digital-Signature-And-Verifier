@@ -1,0 +1,469 @@
+
+{% extends "base.html" %}
+
+{% block title %}Document Signing Portal{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+<style>
+:root {
+    --primary: #4361ee;
+    --primary-hover: #3a56d4;
+    --secondary: #3f37c9;
+    --accent: #4895ef;
+    --success: #4cc9f0;
+    --danger: #f72585;
+    --warning: #f8961e;
+    --light: #f8f9fa;
+    --dark: #212529;
+    --gray-200: #e9ecef;
+    --gray-300: #dee2e6;
+    --gray-500: #adb5bd;
+    --gray-600: #6c757d;
+    --gray-700: #495057;
+    --gradient: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    --shadow: 0 10px 30px rgba(67, 97, 238, 0.15);
+    --card-shadow: 0 15px 35px rgba(0, 0, 0, 0.07);
+}
+    
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    letter-spacing: -0.5px;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    margin: 0 auto;
+}
+
+.content {
+    padding: 40px;
+}
+
+.form-group {
+    margin-bottom: 30px;
+}
+
+.upload-label {
+    color: var(--dark);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    text-align: left;
+    width: 100%;
+    padding-left: 5px;
+}
+
+.file-upload {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px;
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    transition: all 0.3s;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.file-upload:hover {
+    border-color: var(--secondary);
+    background-color: rgba(63, 55, 201, 0.05);
+}
+
+.file-upload.highlight {
+    border-color: var(--secondary);
+    background-color: rgba(63, 55, 201, 0.05);
+}
+
+.file-upload i {
+    font-size: 40px;
+    color: var(--gray-500);
+    margin-bottom: 15px;
+    transition: all 0.3s;
+}
+
+.file-upload:hover i {
+    color: var(--secondary);
+}
+
+.file-upload input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-upload-label {
+    color: var(--dark);
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.file-upload-sublabel {
+    color: var(--gray-600);
+    font-size: 14px;
+}
+
+.file-name {
+    margin-top: 15px;
+    font-size: 14px;
+    color: var(--dark);
+    background-color: rgba(76, 201, 240, 0.1);
+    padding: 5px 10px;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 300px;
+    text-align: center;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: none;
+}
+
+.button-container {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 14px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    gap: 8px;
+    flex: 1;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--primary-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+}
+
+.btn-primary:disabled {
+    background: var(--gray-300);
+    cursor: not-allowed;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 30px 0;
+    color: var(--gray-600);
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.divider span {
+    padding: 0 15px;
+    font-size: 14px;
+}
+
+.steps-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    text-align: center;
+}
+
+.signing-step {
+    flex: 1;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.step-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(63, 55, 201, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.step-icon i {
+    font-size: 24px;
+    color: var(--secondary);
+}
+
+.step-text {
+    color: var(--dark);
+    font-weight: 500;
+}
+
+/* Result styling */
+.result {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.success {
+    background: rgba(76, 201, 240, 0.1);
+    border: 1px solid var(--success);
+}
+
+.failure {
+    background: rgba(247, 37, 133, 0.1);
+    border: 1px solid var(--danger);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .steps-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .signing-step {
+        flex-direction: row;
+        text-align: left;
+        gap: 15px;
+    }
+    
+    .step-icon {
+        margin-bottom: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .content {
+        padding: 25px;
+    }
+    
+    .button-container {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Document Signing Portal</h1>
+
+<div class="container">
+    <div class="content">
+        <form id="signForm" method="POST" enctype="multipart/form-data" action=" ">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <div class="upload-label">Upload Document to Sign</div>
+                <div class="file-upload" id="document-drop-area">
+                    <i class="fas fa-file-alt"></i>
+                    <div class="file-upload-label">Drag & Drop your document here</div>
+                    <div class="file-upload-sublabel">or click to browse</div>
+                    <input type="file" name="file" id="fileInput" required>
+                    <div class="file-name" id="documentFileName"></div>
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <button type="submit" class="btn btn-primary" id="signBtn" disabled>
+                    <i class="fas fa-signature"></i>
+                    Sign Document
+                </button>
+            </div>
+        </form>
+        
+        {% if error_message %}
+        <div class="failure result">
+            <h3>Signing Failed</h3>
+            <p>{{ error_message }}</p>
+        </div>
+        {% endif %}
+        
+        <!-- Signature output container -->
+        <div id="signatureOutput" style="margin-top: 1.5rem;"></div>
+        
+        <div class="divider">
+            <span>How Document Signing Works</span>
+        </div>
+        
+        <div class="steps-container">
+            <div class="signing-step">
+                <div class="step-icon">
+                    <i class="fas fa-upload"></i>
+                </div>
+                <div class="step-text">Upload your document</div>
+            </div>
+            
+            <div class="signing-step">
+                <div class="step-icon">
+                    <i class="fas fa-key"></i>
+                </div>
+                <div class="step-text">Encrypted with your private key</div>
+            </div>
+            
+            <div class="signing-step">
+                <div class="step-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="step-text">Document signed securely</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const signBtn = document.getElementById('signBtn');
+    const documentFileName = document.getElementById('documentFileName');
+    const signForm = document.getElementById('signForm');
+    const loadingOverlay = document.querySelector('.loading-overlay');
+    const documentDropArea = document.getElementById('document-drop-area');
+
+    // Validation state
+    let isFileSelected = false;
+
+    // Enable/disable sign button based on file selection
+    function validateFormAndEnableButton() {
+        signBtn.disabled = !isFileSelected;
+    }
+
+    // Handle file selection
+    fileInput.addEventListener('change', function(e) {
+        const fileName = e.target.files[0]?.name;
+        
+        if (fileName) {
+            isFileSelected = true;
+            documentFileName.textContent = fileName;
+            documentFileName.style.display = 'block';
+            
+            // Visual feedback that file was selected
+            const icon = documentDropArea.querySelector('i');
+            icon.classList.remove('fa-file-alt');
+            icon.classList.add('fa-check-circle');
+            icon.style.color = 'var(--success)';
+        } else {
+            isFileSelected = false;
+            documentFileName.style.display = 'none';
+        }
+        
+        validateFormAndEnableButton();
+    });
+
+    // Add drag and drop functionality
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        documentDropArea.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+        documentDropArea.addEventListener(eventName, function() {
+            documentDropArea.classList.add('highlight');
+        }, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        documentDropArea.addEventListener(eventName, function() {
+            documentDropArea.classList.remove('highlight');
+        }, false);
+    });
+    
+    documentDropArea.addEventListener('drop', function(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        fileInput.files = files;
+        
+        // Trigger change event manually
+        const event = new Event('change');
+        fileInput.dispatchEvent(event);
+    }, false);
+
+    // Show loading overlay when form is submitted
+    signForm.addEventListener('submit', function(e) {
+        if (isFileSelected) {
+            loadingOverlay.classList.add('visible');
+        } else {
+            e.preventDefault();
+            alert('Please select a document to sign');
+        }
+    });
+
+    // Visual feedback when focusing on interactive elements
+    const interactiveElements = document.querySelectorAll('input, button');
+    interactiveElements.forEach(element => {
+        element.addEventListener('focus', function() {
+            this.style.transition = 'all 0.2s ease';
+            this.style.transform = 'scale(1.01)';
+        });
+        
+        element.addEventListener('blur', function() {
+            this.style.transform = 'scale(1)';
+        });
+    });
+</script>
+{% endblock %}
