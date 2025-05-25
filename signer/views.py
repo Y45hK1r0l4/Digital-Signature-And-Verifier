@@ -101,8 +101,7 @@ def sign_file_view(request):
 
         file_path = fs.save(uploaded_file.name, uploaded_file)  
         file_path = fs.path(file_path)
-
-        print(f"File saved at: {file_path}")  
+  
         try:
             # Read file content and compute hash
             with open(file_path, "rb") as f:
@@ -130,7 +129,9 @@ def sign_file_view(request):
             with open(signature_path, "rb") as f:
                 response = HttpResponse(f.read(), content_type="application/octet-stream")
                 response["Content-Disposition"] = f'attachment; filename="{smart_str(signature_file_name)}"'
+                os.remove(file_path)
                 return response
+ 
 
         except Exception as e:
             print(f"Error signing file: {e}")  
@@ -217,10 +218,9 @@ def custom_file_sign(request):
             with open(signature_path, "rb") as f:
                 response = HttpResponse(f.read(), content_type="application/octet-stream")
                 response["Content-Disposition"] = f'attachment; filename="{smart_str(signature_file_name)}"'
+                os.remove(file_path)
                 return response
             
-            os.remove(file_path)
-            os.remove(private_key_path)
 
         except Exception as e:
             logger.error(f"Error during signing: {e}")
@@ -363,6 +363,7 @@ def custom_file_verify(request):
     # If GET request, render the upload form
     return render(request, "signature_app/custom_verify.html")
 
+
 # Function to verify a signature
 def verify_signature(file_path, signature_path):
     print("Verifying signature...")  
@@ -433,6 +434,10 @@ def verify_file_view(request):
             status = "`````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````error"
             message = "Signature is invalid!"
             signed_message = "Verification failed. The signature does not match."
+
+
+        os.remove(file_path)
+        os.remove(signature_path)
 
         return render(request, "signature_app/verify_result.html", {
             "status": status,
