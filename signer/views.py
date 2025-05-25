@@ -139,7 +139,6 @@ def sign_file_view(request):
     return render(request, "signature_app/sign.html")
 
 def custom_file_sign(request):
-    """Handle custom file signing with user-provided private key"""
     if request.method == 'POST':
         uploaded_file = request.FILES.get('file_to_sign')
         private_key_text = request.POST.get('private_key')
@@ -157,6 +156,7 @@ def custom_file_sign(request):
             with open(file_path, "rb") as f:
                 file_data = f.read()
         except Exception as e:
+            os.remove(file_path)
             return HttpResponse(f"Failed to read file: {str(e)}", status=500)
 
         # Get private key from either text input or file
@@ -168,6 +168,8 @@ def custom_file_sign(request):
             with open(private_key_path, "rb") as f:
                 key_data = f.read()
         else:
+            os.remove(file_path)
+            os.remove(private_key_path)
             return HttpResponse("No private key provided", status=400)
 
         try:
@@ -178,6 +180,8 @@ def custom_file_sign(request):
             )
         except Exception as e:
             logger.error(f"Error loading private key: {e}")
+            os.remove(file_path)
+            os.remove(private_key_path)
             return HttpResponse(f"Error loading private key: {e}", status=400)
 
         # Choose hash algorithm
@@ -188,6 +192,8 @@ def custom_file_sign(request):
         elif hash_algo == 'SHA512':
             hash_func = hashes.SHA512()
         else:
+            os.remove(file_path)
+            os.remove(private_key_path)
             return HttpResponse(f"Unsupported hash algorithm: {hash_algo}", status=400)
 
         try:
@@ -212,6 +218,9 @@ def custom_file_sign(request):
                 response = HttpResponse(f.read(), content_type="application/octet-stream")
                 response["Content-Disposition"] = f'attachment; filename="{smart_str(signature_file_name)}"'
                 return response
+            
+            os.remove(file_path)
+            os.remove(private_key_path)
 
         except Exception as e:
             logger.error(f"Error during signing: {e}")
@@ -353,7 +362,6 @@ def custom_file_verify(request):
 
     # If GET request, render the upload form
     return render(request, "signature_app/custom_verify.html")
-
 
 # Function to verify a signature
 def verify_signature(file_path, signature_path):
